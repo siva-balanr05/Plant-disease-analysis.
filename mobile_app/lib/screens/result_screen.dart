@@ -106,7 +106,7 @@ class ResultScreen extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('History is available in the web dashboard/API.')),
+                      const SnackBar(content: Text('Offline mode active. Local history storage is not implemented yet.')),
                     );
                   },
                   child: const Text('View History'),

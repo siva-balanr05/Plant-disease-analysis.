@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../services/api_service.dart';
+import '../services/model_service.dart';
 import '../widgets/image_picker_widget.dart';
 import 'result_screen.dart';
 
@@ -15,29 +15,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _isConnected = false;
-  bool _checkingConnection = true;
+  bool _modelReady = false;
+  bool _checkingModel = true;
   bool _predicting = false;
 
   @override
   void initState() {
     super.initState();
-    _checkHealth();
+    _checkModel();
   }
 
-  Future<void> _checkHealth() async {
+  Future<void> _checkModel() async {
     setState(() {
-      _checkingConnection = true;
+      _checkingModel = true;
     });
 
-    final connected = await ApiService.checkHealth();
+    final ready = await ModelService.instance.checkModelReady();
     if (!mounted) {
       return;
     }
 
     setState(() {
-      _isConnected = connected;
-      _checkingConnection = false;
+      _modelReady = ready;
+      _checkingModel = false;
     });
   }
 
@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     try {
-      final result = await ApiService.predictDisease(imageFile);
+      final result = await ModelService.instance.predictDisease(imageFile);
       if (!mounted) {
         return;
       }
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (_checkingConnection)
+                      if (_checkingModel)
                         const SizedBox(
                           width: 16,
                           height: 16,
@@ -114,13 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icon(
                           Icons.circle,
                           size: 12,
-                          color: _isConnected ? Colors.green : Colors.red,
+                          color: _modelReady ? Colors.green : Colors.red,
                         ),
                       const SizedBox(width: 8),
                       Text(
-                        _checkingConnection
-                            ? 'Checking API connection...'
-                            : (_isConnected ? 'API Connected' : 'API Not Reachable'),
+                        _checkingModel
+                            ? 'Loading on-device model...'
+                            : (_modelReady ? 'Offline Model Ready' : 'Offline Model Not Available'),
                       ),
                     ],
                   ),
@@ -146,9 +146,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
-                  onPressed: _checkingConnection ? null : _checkHealth,
+                  onPressed: _checkingModel ? null : _checkModel,
                   icon: const Icon(Icons.sync),
-                  label: const Text('Refresh Connection Status'),
+                  label: const Text('Reload Offline Model'),
                 ),
               ],
             ),
