@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #ecfdf5 0%, #f7fee7 45%, #ffffff 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
