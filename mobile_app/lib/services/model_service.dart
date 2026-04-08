@@ -23,7 +23,10 @@ class ModelService {
       return;
     }
 
-    _interpreter = await Interpreter.fromAsset(_modelAssetPath);
+    // Load model bytes from Flutter asset bundle and create interpreter
+    final modelData = await rootBundle.load(_modelAssetPath);
+    final buffer = modelData.buffer.asUint8List();
+    _interpreter = Interpreter.fromBuffer(buffer);
     _labels = await _loadLabels(_labelsAssetPath);
 
     final outputShape = _interpreter!.getOutputTensor(0).shape;
