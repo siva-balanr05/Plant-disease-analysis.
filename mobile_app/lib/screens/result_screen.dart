@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../data/disease_solutions.dart';
 import '../widgets/result_card_widget.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -14,6 +15,57 @@ class ResultScreen extends StatelessWidget {
 
   final File imageFile;
   final Map<String, dynamic> result;
+
+  Widget _buildSolutionCard(String disease) {
+    final solution = getDiseaseSolution(disease);
+    final isHealthy = disease.toLowerCase().contains('healthy');
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: isHealthy ? Colors.green.shade50 : Colors.orange.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isHealthy ? Icons.check_circle : Icons.medical_services,
+                  color: isHealthy ? Colors.green.shade700 : Colors.orange.shade700,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    solution.title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isHealthy ? Colors.green.shade700 : Colors.orange.shade700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            ...solution.steps.asMap().entries.map((entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${entry.key + 1}. ',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(child: Text(entry.value)),
+                ],
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +144,8 @@ class ResultScreen extends StatelessWidget {
                 trailing: Text('${(((entry.value as num?) ?? 0) * 100).toStringAsFixed(2)}%'),
               ),
             ),
+          const SizedBox(height: 18),
+          _buildSolutionCard(disease),
           const SizedBox(height: 18),
           Row(
             children: [
